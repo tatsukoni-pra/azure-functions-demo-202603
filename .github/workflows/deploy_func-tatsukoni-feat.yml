@@ -1,0 +1,51 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Deploy func-tatsukoni-feat
+
+on:
+  workflow_dispatch:
+
+env:
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: "./api/feat"
+  FUNCTION_NAME: "func-tatsukoni-feat"
+  SLOT_NAME: "Production"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Dependencies and Build
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          npm install
+          npm run build --if-present
+          popd
+
+      - name: Login via Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_FUNCTION_TATSUKONI_FEAT }}
+
+      - name: Deploy Azure Function
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: ${{ env.FUNCTION_NAME }}
+          slot-name: ${{ env.SLOT_NAME }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          respect-funcignore: true
+
+      - name: Logout via Azure CLI
+        run: az logout
