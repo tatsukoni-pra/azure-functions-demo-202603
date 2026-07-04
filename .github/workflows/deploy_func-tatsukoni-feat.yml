@@ -4,6 +4,15 @@
 name: Deploy func-tatsukoni-feat
 
 on:
+  workflow_call:
+    secrets:
+      AZURE_CLIENT_ID_FUNCTION_TATSUKONI_FEAT:
+        required: true
+      AZURE_AD_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+
   workflow_dispatch:
 
 env:
@@ -15,6 +24,12 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    # OIDC で Microsoft Entra ID へ federated login するため id-token が必須
+    permissions:
+      id-token: write
+      contents: read
+    # Federated Credential の subject と一致させるため必須
+    environment: api-feat-dev
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,10 +48,12 @@ jobs:
           npm run build --if-present
           popd
 
-      - name: Login via Azure CLI
-        uses: azure/login@v1
+      - name: Login via Azure CLI (OIDC)
+        uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS_FUNCTION_TATSUKONI_FEAT }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID_FUNCTION_TATSUKONI_FEAT }}
+          tenant-id: ${{ secrets.AZURE_AD_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy Azure Function
         uses: Azure/functions-action@v1
