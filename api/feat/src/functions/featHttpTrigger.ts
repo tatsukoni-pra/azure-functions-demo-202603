@@ -5,7 +5,7 @@ export async function featHttpTrigger(request: HttpRequest, context: InvocationC
 
     const name = request.query.get('name') || await request.text() || 'world';
 
-    return { body: `featHttpTrigger, ${name}!` };
+    return { body: `featHttpTrigger_v2, ${name}!` };
 };
 
 app.http('featHttpTrigger', {
