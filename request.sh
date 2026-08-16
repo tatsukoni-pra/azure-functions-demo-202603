@@ -32,5 +32,9 @@ echo "Press Ctrl+C to stop."
 while true; do
   STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
   echo "$(date '+%Y-%m-%d %H:%M:%S') $STATUS"
+  if [ "$STATUS" != "200" ]; then
+    echo "Error: received HTTP $STATUS. Exiting."
+    exit 1
+  fi
   sleep 1
 done

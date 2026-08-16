@@ -1,0 +1,75 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Deploy func-tatsukoni-premium
+
+on:
+  workflow_call:
+    secrets:
+      AZURE_CLIENT_ID_FUNCTION_TATSUKONI_FEAT:
+        required: true
+      AZURE_AD_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+
+  workflow_dispatch:
+
+env:
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: "./api/premium_demo"
+  FUNCTION_NAME: "func-tatsukoni-premium"
+  SLOT_NAME: "staging"
+  RESOURCE_GROUP: "rg-tatsukoni-dev"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      id-token: write
+      contents: read
+    environment: api-feat-dev
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install Dependencies and Build
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          npm install
+          npm run build --if-present
+          popd
+
+      - name: Login via Azure CLI (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID_FUNCTION_TATSUKONI_FEAT }}
+          tenant-id: ${{ secrets.AZURE_AD_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Staging Slot
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: ${{ env.FUNCTION_NAME }}
+          slot-name: ${{ env.SLOT_NAME }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          respect-funcignore: true
+
+      - name: Swap Staging to Production
+        run: |
+          az functionapp deployment slot swap \
+            --name ${{ env.FUNCTION_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --slot ${{ env.SLOT_NAME }} \
+            --target-slot production
+
+      - name: Logout via Azure CLI
+        run: az logout
