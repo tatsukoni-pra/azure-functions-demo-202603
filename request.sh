@@ -7,6 +7,7 @@
 #   test   - https://.../api/test/testHttpTrigger   に 1回/秒 アクセス
 #   feat   - https://.../api/feat/featHttpTrigger   に 1回/秒 アクセス
 #   sample - https://.../api/sample/response        に 1回/秒 アクセス
+#   healthCheck - https://func-tatsukoni-premium-ezgvfpbgd3bfepeq.japaneast-01.azurewebsites.net/api/premium_demo/healthCheck に 1回/秒 アクセス
 #
 # 停止: Ctrl+C
 
@@ -19,6 +20,9 @@ case "$1" in
     ;;
   sample)
     URL="https://tatsukoni-demo-cve4defegecxg2e5.z01.azurefd.net/api/sample/response"
+    ;;
+  healthCheck)
+    URL="https://func-tatsukoni-premium-ezgvfpbgd3bfepeq.japaneast-01.azurewebsites.net/api/premium_demo/healthCheck"
     ;;
   *)
     echo "Usage: $0 {test|feat|sample}"

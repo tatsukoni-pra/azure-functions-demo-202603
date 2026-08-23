@@ -85,6 +85,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           value: appInsights.properties.ConnectionString
         }
       ]
+      healthCheckPath: '/api/premium_demo/healthCheck'
       cors: {
         allowedOrigins: [
           'https://portal.azure.com'
@@ -127,6 +128,7 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
           value: appInsights.properties.ConnectionString
         }
       ]
+      healthCheckPath: '/api/premium_demo/healthCheck'
       cors: {
         allowedOrigins: [
           'https://portal.azure.com'
@@ -139,24 +141,24 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
 }
 
 // ============================================================
-// Role Assignments: サービスプリンシパルに Contributor を付与
+// Role Assignments: サービスプリンシパルに最小権限を付与
 // ============================================================
 resource roleAssignmentFunctionApp 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(functionApp.id, servicePrincipalObjectId, 'Contributor')
+  name: guid(functionApp.id, servicePrincipalObjectId, 'WebsiteContributor')
   scope: functionApp
   properties: {
     principalId: servicePrincipalObjectId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c') // Contributor
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'de139f84-1756-47ae-9be6-808fbbe84772') // Website Contributor
     principalType: 'ServicePrincipal'
   }
 }
 
 resource roleAssignmentAppServicePlan 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(appServicePlan.id, servicePrincipalObjectId, 'Contributor')
+  name: guid(appServicePlan.id, servicePrincipalObjectId, 'Reader')
   scope: appServicePlan
   properties: {
     principalId: servicePrincipalObjectId
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c') // Contributor
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7') // Reader
     principalType: 'ServicePrincipal'
   }
 }
