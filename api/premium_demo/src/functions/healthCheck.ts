@@ -8,6 +8,7 @@ export async function healthCheck(request: HttpRequest, context: InvocationConte
         context.log(`Health check: returning 503 (FAIL_INSTANCE=${failInstance}, Server=${serverName})`);
         return { status: 503, body: `unhealthy (forced on ${serverName})` };
     }
+    context.log(`Health check: returning 200 (Server=${serverName})`);
     return { status: 200, body: `healthy (${serverName})` };
 };
 
