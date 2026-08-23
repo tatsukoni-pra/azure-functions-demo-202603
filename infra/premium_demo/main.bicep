@@ -7,6 +7,13 @@ param servicePrincipalObjectId string
 @description('既存の Log Analytics Workspace リソース ID')
 param logAnalyticsWorkspaceId string
 
+@description('CosmosDB 接続文字列')
+@secure()
+param cosmosDBConnection string
+
+@description('正常性チェックの成否を制御するフラグ（true/false）')
+param isHealthCheckPass string = 'true'
+
 // ============================================================
 // Storage Account
 // ============================================================
@@ -84,6 +91,14 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
           value: appInsights.properties.ConnectionString
         }
+        {
+          name: 'CosmosDBConnection'
+          value: cosmosDBConnection
+        }
+        {
+          name: 'IS_HEALTH_CHECK_PASS'
+          value: isHealthCheckPass
+        }
       ]
       healthCheckPath: '/api/premium_demo/healthCheck'
       cors: {
@@ -127,6 +142,22 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
           value: appInsights.properties.ConnectionString
         }
+        {
+          name: 'CosmosDBConnection'
+          value: cosmosDBConnection
+        }
+        {
+          name: 'IS_HEALTH_CHECK_PASS'
+          value: isHealthCheckPass
+        }
+        {
+          name: 'AzureWebJobs.testCosmosTrigger.Disabled'
+          value: '1'
+        }
+        {
+          name: 'AzureWebJobs.testTimerTrigger.Disabled'
+          value: '1'
+        }
       ]
       healthCheckPath: '/api/premium_demo/healthCheck'
       cors: {
@@ -137,6 +168,20 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
       minTlsVersion: '1.2'
       ftpsState: 'FtpsOnly'
     }
+  }
+}
+
+// ============================================================
+// Slot-specific settings: スワップ時にスロットに固定する設定
+// ============================================================
+resource slotConfigNames 'Microsoft.Web/sites/config@2023-12-01' = {
+  parent: functionApp
+  name: 'slotConfigNames'
+  properties: {
+    appSettingNames: [
+      'AzureWebJobs.testCosmosTrigger.Disabled'
+      'AzureWebJobs.testTimerTrigger.Disabled'
+    ]
   }
 }
 
