@@ -17,7 +17,8 @@ import { app, InvocationContext } from "@azure/functions";
 
 export async function testCosmosTrigger(documents: unknown[], context: InvocationContext): Promise<void> {
     const serverName = process.env.COMPUTERNAME || 'unknown';
-    context.log(`[Server: ${serverName}] Cosmos DB function started. Processing ${documents.length} document(s).`);
+    const instanceId = process.env.WEBSITE_INSTANCE_ID || 'unknown';
+    context.log(`[Server: ${serverName}] [InstanceId: ${instanceId}] Cosmos DB function started. Processing ${documents.length} document(s).`);
 
     await new Promise(resolve => setTimeout(resolve, 60000));
 

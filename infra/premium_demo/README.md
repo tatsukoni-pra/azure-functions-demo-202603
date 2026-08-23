@@ -24,6 +24,7 @@
 ## 作成（デプロイ）
 
 ```bash
+source infra/premium_demo/.env && \
 az deployment group create \
 --resource-group rg-tatsukoni-dev \
 --template-file infra/premium_demo/main.bicep \
@@ -35,6 +36,7 @@ az deployment group create \
 実際にデプロイせず、変更内容を事前確認する。
 
 ```bash
+source infra/premium_demo/.env && \
 az deployment group what-if \
 --resource-group rg-tatsukoni-dev \
 --template-file infra/premium_demo/main.bicep \
