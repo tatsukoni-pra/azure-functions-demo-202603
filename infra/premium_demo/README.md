@@ -26,8 +26,8 @@
 ```bash
 az deployment group create \
 --resource-group rg-tatsukoni-dev \
---template-file infra/main.bicep \
---parameters infra/main.bicepparam
+--template-file infra/premium_demo/main.bicep \
+--parameters infra/premium_demo/main.bicepparam
 ```
 
 ## 変更の確認（What-If）
@@ -37,8 +37,8 @@ az deployment group create \
 ```bash
 az deployment group what-if \
 --resource-group rg-tatsukoni-dev \
---template-file infra/main.bicep \
---parameters infra/main.bicepparam
+--template-file infra/premium_demo/main.bicep \
+--parameters infra/premium_demo/main.bicepparam
 ```
 
 ## 削除
