@@ -72,6 +72,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     reserved: true
+    clientAffinityEnabled: false
     siteConfig: {
       linuxFxVersion: 'Node|24'
       appSettings: [
@@ -98,6 +99,10 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
         {
           name: 'IS_HEALTH_CHECK_PASS'
           value: isHealthCheckPass
+        }
+        {
+          name: 'HTTP_TRIGGER_DELAY_MS'
+          value: '500'
         }
       ]
       healthCheckPath: '/api/premium_demo/healthCheck'
@@ -123,6 +128,7 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     reserved: true
+    clientAffinityEnabled: false
     siteConfig: {
       linuxFxVersion: 'Node|24'
       appSettings: [
@@ -149,6 +155,10 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
         {
           name: 'IS_HEALTH_CHECK_PASS'
           value: isHealthCheckPass
+        }
+        {
+          name: 'HTTP_TRIGGER_DELAY_MS'
+          value: '500'
         }
         {
           name: 'AzureWebJobs.testCosmosTrigger.Disabled'
