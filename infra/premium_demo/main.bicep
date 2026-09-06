@@ -104,6 +104,18 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           name: 'HTTP_TRIGGER_DELAY_MS'
           value: '500'
         }
+        {
+          name: 'COSMOS_DATABASE_NAME'
+          value: 'FeatDatabase'
+        }
+        {
+          name: 'COSMOS_CONTAINER_NAME'
+          value: 'FeatContainerApp'
+        }
+        {
+          name: 'COSMOS_LEASE_CONTAINER_NAME'
+          value: 'leases'
+        }
       ]
       healthCheckPath: '/api/premium_demo/healthCheck'
       cors: {
@@ -159,6 +171,18 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
         {
           name: 'HTTP_TRIGGER_DELAY_MS'
           value: '500'
+        }
+        {
+          name: 'COSMOS_DATABASE_NAME'
+          value: 'FeatDatabase'
+        }
+        {
+          name: 'COSMOS_CONTAINER_NAME'
+          value: 'FeatContainerApp'
+        }
+        {
+          name: 'COSMOS_LEASE_CONTAINER_NAME'
+          value: 'leases'
         }
         {
           name: 'AzureWebJobs.testCosmosTrigger.Disabled'

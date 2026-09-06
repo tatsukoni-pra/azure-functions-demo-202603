@@ -4,7 +4,7 @@ export async function healthCheck(request: HttpRequest, context: InvocationConte
     const failInstance = process.env.FAIL_INSTANCE;
     const serverName = process.env.COMPUTERNAME || 'unknown';
 
-    if (failInstance === 'all' || failInstance === serverName) {
+    if (failInstance === serverName) {
         context.log(`Health check: returning 503 (FAIL_INSTANCE=${failInstance}, Server=${serverName})`);
         return { status: 503, body: `unhealthy (forced on ${serverName})` };
     }
