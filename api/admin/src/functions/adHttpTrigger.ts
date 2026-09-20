@@ -1,16 +1,16 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 
-export async function adminHttpTrigger(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function adHttpTrigger(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
 
     const name = request.query.get('name') || await request.text() || 'world';
 
-    return { body: `adminHttpTrigger, ${name}!` };
+    return { body: `adHttpTrigger, ${name}!` };
 };
 
-app.http('adminHttpTrigger', {
+app.http('adHttpTrigger', {
     methods: ['GET', 'POST'],
     authLevel: 'anonymous',
-    route: 'adminHttpTrigger',
-    handler: adminHttpTrigger
+    route: 'adHttpTrigger',
+    handler: adHttpTrigger
 });
