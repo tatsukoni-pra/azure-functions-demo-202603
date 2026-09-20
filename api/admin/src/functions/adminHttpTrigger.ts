@@ -11,5 +11,6 @@ export async function adminHttpTrigger(request: HttpRequest, context: Invocation
 app.http('adminHttpTrigger', {
     methods: ['GET', 'POST'],
     authLevel: 'anonymous',
+    route: 'adminHttpTrigger',
     handler: adminHttpTrigger
 });

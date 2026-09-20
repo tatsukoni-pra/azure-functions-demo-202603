@@ -11,5 +11,6 @@ export async function adminHttpTrigger2(request: HttpRequest, context: Invocatio
 app.http('adminHttpTrigger2', {
     methods: ['GET', 'POST'],
     authLevel: 'anonymous',
+    route: 'adminHttpTrigger2',
     handler: adminHttpTrigger2
 });
