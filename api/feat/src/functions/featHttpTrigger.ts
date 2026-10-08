@@ -32,7 +32,7 @@ function getContainer(): Promise<{ container: Container; partitionKeyPath: strin
 }
 
 export async function featHttpTrigger(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
-    const serverName = process.env.COMPUTERNAME || 'unknown';
+    const serverName = process.env.WEBSITE_INSTANCE_ID || 'unknown';
     context.log(`[Server: ${serverName}] Http function processed request for url "${request.url}"`);
 
     const id = request.query.get('id') || 'feat-sample';
