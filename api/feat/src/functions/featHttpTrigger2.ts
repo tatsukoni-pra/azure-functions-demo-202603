@@ -35,7 +35,7 @@ export async function featHttpTrigger2(request: HttpRequest, context: Invocation
     };
     context.log(`[Server: ${serverName}] IP info: ${JSON.stringify(ipInfo)}`);
 
-    return { body: `featHttpTrigger2_v2, ${name}! ${JSON.stringify(ipInfo)}` };
+    return { body: `featHttpTrigger2_v2, ${name}!` };
 };
 
 app.http('featHttpTrigger2', {

@@ -66,17 +66,21 @@ export async function featHttpTrigger(request: HttpRequest, context: InvocationC
             })
             : await container.items.create<FeatItem>(after);
         context.log(`[Server: ${serverName}] Write id=${id} status=${writeResponse.statusCode} RU=${writeResponse.requestCharge}`);
+        // 詳細（インスタンスID・パーティションキー・Cosmos メタデータ・RU）はログにのみ出力する
+        context.log(`[Server: ${serverName}] Detail: ${JSON.stringify({
+            partitionKeyPath,
+            before: before ?? null,
+            after: writeResponse.resource,
+            requestCharge: { read: readResponse.requestCharge, write: writeResponse.requestCharge },
+        })}`);
 
+        // レスポンスにはアプリケーションデータのみを返す
+        const result = writeResponse.resource!;
         return {
             jsonBody: {
-                server: serverName,
-                partitionKeyPath,
-                before: before ?? null,
-                after: writeResponse.resource,
-                requestCharge: {
-                    read: readResponse.requestCharge,
-                    write: writeResponse.requestCharge,
-                },
+                id: result.id,
+                count: result.count,
+                updatedAt: result.updatedAt,
             },
         };
     } catch (err) {
@@ -84,7 +88,7 @@ export async function featHttpTrigger(request: HttpRequest, context: InvocationC
         // 412: 読み取り後に別リクエストが更新した / 409: 同時に新規作成された
         if (code === 412 || code === 409) {
             context.warn(`[Server: ${serverName}] Write conflict id=${id} status=${code}`);
-            return { status: 409, jsonBody: { server: serverName, message: 'Write conflict', statusCode: code, before: before ?? null } };
+            return { status: 409, jsonBody: { message: 'Write conflict' } };
         }
         throw err;
     }
