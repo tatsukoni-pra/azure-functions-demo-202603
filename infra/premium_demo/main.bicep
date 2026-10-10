@@ -117,7 +117,8 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           value: 'leases'
         }
       ]
-      healthCheckPath: '/api/premium_demo/healthCheck'
+      // 正常性チェックは無効化（空文字で既存の設定もクリアする）
+      healthCheckPath: ''
       cors: {
         allowedOrigins: [
           'https://portal.azure.com'
@@ -193,7 +194,8 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2023-12-01' = {
           value: '1'
         }
       ]
-      healthCheckPath: '/api/premium_demo/healthCheck'
+      // 正常性チェックは無効化（空文字で既存の設定もクリアする）
+      healthCheckPath: ''
       cors: {
         allowedOrigins: [
           'https://portal.azure.com'
