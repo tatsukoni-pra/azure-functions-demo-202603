@@ -1,5 +1,5 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { Container, CosmosClient, ErrorResponse } from "@azure/cosmos";
+import { Container, CosmosClient, ErrorResponse, ItemResponse } from "@azure/cosmos";
 
 interface TestItem {
     id: string;
@@ -44,11 +44,21 @@ export async function testHttpTrigger(request: HttpRequest, context: InvocationC
     // パーティションキー値（未指定時は id と同じ値を使う）
     const partitionKey = request.query.get('pk') || id;
 
-    const { container, partitionKeyPath } = await getContainer();
+    // 検証用: CosmosDB アクセスの例外を自前でログ出力し、所要時間と 403 の内容を確認する
+    const t0 = Date.now();
+    let container: Container;
+    let partitionKeyPath: string;
+    let readResponse: ItemResponse<TestItem>;
+    try {
+        ({ container, partitionKeyPath } = await getContainer());
+        // 読み取り
+        readResponse = await container.item(id, partitionKey).read<TestItem>();
+    } catch (err) {
+        const e = err as ErrorResponse;
+        context.error(`[Server: ${serverName}] Cosmos error after ${Date.now() - t0}ms code=${e.code} substatus=${e.substatus} message=${(e.message ?? '').slice(0, 200)}`);
+        return { status: 500, jsonBody: { message: 'Cosmos error', code: e.code } };
+    }
     const partitionKeyField = partitionKeyPath.replace(/^\//, '');
-
-    // 読み取り
-    const readResponse = await container.item(id, partitionKey).read<TestItem>();
     const before = readResponse.resource;
     context.log(`[Server: ${serverName}] Read id=${id} pk=${partitionKey} status=${readResponse.statusCode} RU=${readResponse.requestCharge}`);
 
