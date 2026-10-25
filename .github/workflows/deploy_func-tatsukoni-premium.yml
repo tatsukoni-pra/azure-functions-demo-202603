@@ -19,7 +19,7 @@ env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: "./api/premium_demo"
   FUNCTION_NAME: "func-tatsukoni-premium"
   SLOT_NAME: "staging"
-  RESOURCE_GROUP: "rg-tatsukoni-dev"
+  RESOURCE_GROUP: "rg-tatsukoni-prd"
 
 jobs:
   build-and-deploy:
