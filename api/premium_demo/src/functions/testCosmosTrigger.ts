@@ -11,12 +11,10 @@ export async function testCosmosTrigger(documents: unknown[], context: Invocatio
     context.log(`[Server: ${serverName}] Cosmos DB function completed.`);
 };
 
-// 監視対象: CosmosDBConnection_prd のアカウント（tatsukoni-feat-prd）
-// リースコンテナも同じアカウントに作成される
 app.cosmosDB('testCosmosTrigger', {
-    connection: 'CosmosDBConnection_prd',
-    databaseName: '%COSMOS_DATABASE_NAME_PRD%',
-    containerName: '%COSMOS_CONTAINER_NAME_PRD%',
+    connection: 'CosmosDBConnection',
+    databaseName: '%COSMOS_DATABASE_NAME%',
+    containerName: '%COSMOS_CONTAINER_NAME%',
     leaseContainerName: '%COSMOS_LEASE_CONTAINER_NAME%',
     createLeaseContainerIfNotExists: true,
     handler: testCosmosTrigger
