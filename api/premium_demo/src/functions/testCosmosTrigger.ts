@@ -9,6 +9,12 @@ export async function testCosmosTrigger(documents: unknown[], context: Invocatio
     if (delayMs > 0) {
         await new Promise(resolve => setTimeout(resolve, delayMs * documents.length));
     }
+
+    // 検証で全件処理されたか（重複・漏れ）を確かめるため、処理したドキュメントの id を1件ずつ出す
+    for (const document of documents) {
+        const documentId = (document as { id?: unknown }).id;
+        context.log(`[Processed] id=${String(documentId)} instance=${instanceId}`);
+    }
     context.log(`[InstanceId: ${instanceId}] Cosmos DB function completed.`);
 };
 
