@@ -13,7 +13,7 @@ export async function testCosmosTrigger(documents: unknown[], context: Invocatio
     // 検証で全件処理されたか（重複・漏れ）を確かめるため、処理したドキュメントの id を1件ずつ出す
     for (const document of documents) {
         const documentId = (document as { id?: unknown }).id;
-        context.log(`[Processed] id=${String(documentId)} instance=${instanceId}`);
+        context.log(`[Processed] function=${context.functionName} id=${String(documentId)} instance=${instanceId}`);
     }
     context.log(`[InstanceId: ${instanceId}] Cosmos DB function completed.`);
 };
@@ -28,3 +28,18 @@ app.cosmosDB('testCosmosTrigger', {
     maxItemsPerInvocation: 1,
     handler: testCosmosTrigger
 });
+
+// 複数の関数の目標インスタンス数がどう集約されるかを確かめるため、同じコンテナーを別の lease で監視する関数を足す
+for (const functionName of ['testCosmosTrigger2', 'testCosmosTrigger3']) {
+    app.cosmosDB(functionName, {
+        connection: 'CosmosDBConnection',
+        databaseName: '%COSMOS_DATABASE_NAME%',
+        containerName: '%COSMOS_CONTAINER_NAME%',
+        leaseContainerName: '%COSMOS_LEASE_CONTAINER_NAME%',
+        createLeaseContainerIfNotExists: true,
+        // lease を関数ごとに分け、それぞれが独立した変更フィードの処理として全件を受け取るようにする
+        leaseContainerPrefix: `${functionName}-`,
+        maxItemsPerInvocation: 1,
+        handler: testCosmosTrigger
+    });
+}
